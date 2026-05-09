@@ -3,36 +3,33 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache gcc musl-dev git
+RUN apk add --no-cache git
 
-# Copy go mod files first for better caching
+# Copy dependency files first
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
+# Copy source
 COPY . .
 
-# Build the application from cmd directory
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/main ./cmd/main.go
+# Build static binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w" -o api ./cmd/main.go
 
-# Final stage
-FROM alpine:latest
+# Run stage
+FROM gcr.io/distroless/static-debian12:nonroot
 
-RUN apk --no-cache add ca-certificates tzdata
+WORKDIR /app
 
-WORKDIR /root/
-
-# Copy the binary from builder
-COPY --from=builder /app/main .
+# Copy binary from builder
+COPY --from=builder /app/api .
 
 # Copy migrations
 COPY --from=builder /app/internal/db/migrations ./internal/db/migrations
 
-# Create a non-root user for security
-RUN adduser -D -g '' appuser
-USER appuser
+# Distroless images are read-only and secure by default
+# No chmod needed as files are copied with correct permissions
 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./api"]
