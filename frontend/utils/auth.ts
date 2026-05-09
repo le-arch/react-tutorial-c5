@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASEURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const BASEURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 export const getToken = (): string | null => {
 	if (typeof window !== "undefined") {
@@ -32,6 +32,9 @@ export const isAuthenticated = (): boolean => {
 // Create authenticated axios instance
 export const api = axios.create({
 	baseURL: BASEURL,
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
 // Add interceptor to attach token
@@ -53,3 +56,9 @@ api.interceptors.response.use(
 		return Promise.reject(error);
 	}
 );
+
+export const refreshPage = () => {
+	if (typeof window !== "undefined") {
+		window.location.reload();
+	}
+};

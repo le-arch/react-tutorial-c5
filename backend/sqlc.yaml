@@ -17,6 +17,12 @@ sql:
             go_type: "time.Time"
           - db_type: "timestamp"
             go_type: "time.Time"
+          - db_type: "decimal"
+            go_type: "github.com/shopspring/decimal.Decimal"
+            nullable: true
+          - db_type: "numeric"
+            go_type: "github.com/shopspring/decimal.Decimal"
+            nullable: true
           - column: "transactions.created_at"
             go_type: "time.Time"
           - column: "users.created_at"

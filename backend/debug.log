@@ -1,0 +1,271 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/v1/healthcheck       --> main.main.func1 (4 handlers)
+Database connection established!
+[GIN-debug] POST   /api/v1/auth/register     --> piggy.com/internal/handlers.(*Handler).Register-fm (4 handlers)
+[GIN-debug] POST   /api/v1/auth/login        --> piggy.com/internal/handlers.(*Handler).Login-fm (4 handlers)
+[GIN-debug] POST   /api/v1/transactions      --> piggy.com/internal/handlers.(*Handler).CreateTransaction-fm (5 handlers)
+[GIN-debug] GET    /api/v1/transactions      --> piggy.com/internal/handlers.(*Handler).GetTransactions-fm (5 handlers)
+[GIN-debug] GET    /api/v1/account           --> piggy.com/internal/handlers.(*Handler).GetUserAccount-fm (5 handlers)
+Server running on port 8080
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:33 | 200 |  13.48ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+16000006800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 160000068000.000000
+[GIN] 2026/05/09 - 13:28:33 | 200 |  66.04ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:33 | 200 |   4.48ms |             ::1 | GET      "/api/v1/transactions"
+Creating transaction for user: 5 type: withdrawal amount: 100000
+DEBUG: Creating transaction - Amount: '100000', Type: withdrawal
+DEBUG: Parsed amount decimal: 100000
+DEBUG: Current balance numeric: {Int:+16000006800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}
+DEBUG: Current balance decimal: 160000068000
+DEBUG: New balance decimal: 159999968000
+DEBUG: Stored transaction amount: 100000.00
+[GIN] 2026/05/09 - 13:28:48 | 201 |  32.19ms |             ::1 | POST     "/api/v1/transactions"
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:50 | 200 |   5.57ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999986800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159999868000.000000
+[GIN] 2026/05/09 - 13:28:50 | 200 |   8.74ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:50 | 200 |   5.36ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999986800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159999868000.000000
+[GIN] 2026/05/09 - 13:28:50 | 200 |   2.68ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:50 | 200 |   3.43ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:28:50 | 200 |   2.09ms |             ::1 | GET      "/api/v1/transactions"
+Creating transaction for user: 5 type: withdrawal amount: 3000000
+DEBUG: Creating transaction - Amount: '3000000', Type: withdrawal
+DEBUG: Parsed amount decimal: 3000000
+DEBUG: Current balance numeric: {Int:+15999986800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}
+DEBUG: Current balance decimal: 159999868000
+DEBUG: New balance decimal: 159996868000
+DEBUG: Stored transaction amount: 3000000.00
+[GIN] 2026/05/09 - 13:29:29 | 201 |  13.74ms |             ::1 | POST     "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:29:31 | 200 |   6.25ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:29:31 | 200 |   5.22ms |             ::1 | GET      "/api/v1/account"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:29:31 | 200 |   3.25ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:29:31 | 200 |   6.45ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:29:31 | 200 |   2.19ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:29:31 | 200 |    2.9ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:30:04 | 200 |   2.55ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:30:04 | 200 |   1.76ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:30:07 | 200 |   5.97ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:33:13 | 200 |   4.05ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:33:15 | 200 |   1.86ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:33:15 | 200 |   4.29ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:33:15 | 200 |   7.37ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:33:15 | 200 |   1.39ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:33:16 | 200 |   1.12ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:35:36 | 200 |   2.38ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:35:36 | 200 |   1.59ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:35:40 | 200 |   1.51ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:35:44 | 200 |   1.49ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:13 | 200 |   1.67ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:14 | 200 |    3.5ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:36:14 | 200 |   1.54ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:14 | 200 |   1.23ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993868000.000000
+[GIN] 2026/05/09 - 13:36:14 | 200 |   1.45ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:14 | 200 |   1.98ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:14 | 200 |   3.91ms |             ::1 | GET      "/api/v1/transactions"
+Creating transaction for user: 5 type: withdrawal amount: 50000
+DEBUG: Creating transaction - Amount: '50000', Type: withdrawal
+DEBUG: Parsed amount decimal: 50000
+DEBUG: Current balance numeric: {Int:+15999386800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}
+DEBUG: Current balance decimal: 159993868000
+DEBUG: New balance decimal: 159993818000
+DEBUG: Stored transaction amount: 50000.00
+[GIN] 2026/05/09 - 13:36:36 | 201 |  15.98ms |             ::1 | POST     "/api/v1/transactions"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:38 | 200 |   3.88ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999376800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993768000.000000
+[GIN] 2026/05/09 - 13:36:38 | 200 |   2.08ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:38 | 200 |   2.98ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999376800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993768000.000000
+[GIN] 2026/05/09 - 13:36:38 | 200 |   1.55ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:36:38 | 200 |   2.11ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:37:30 | 200 |   5.55ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:37:30 | 200 |   1.55ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:37:35 | 200 |   3.54ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999376800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993768000.000000
+[GIN] 2026/05/09 - 13:37:35 | 200 |   1.33ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:37:35 | 200 |   1.12ms |             ::1 | GET      "/api/v1/transactions"
+DEBUG: User 5 balance numeric: {Int:+15999376800000 Exp:-2 NaN:false InfinityModifier:finite Valid:true}, float: 159993768000.000000
+[GIN] 2026/05/09 - 13:37:35 | 200 |    1.5ms |             ::1 | GET      "/api/v1/account"
+DEBUG: Transaction 23 amount: 50000.00
+DEBUG: Transaction 22 amount: 3000000.00
+DEBUG: Transaction 21 amount: 100000.00
+DEBUG: Transaction 20 amount: 4000.00
+DEBUG: Transaction 19 amount: 30000.00
+DEBUG: Transaction 18 amount: 80000000000.00
+[GIN] 2026/05/09 - 13:37:35 | 200 |   3.35ms |             ::1 | GET      "/api/v1/transactions"

@@ -6,30 +6,24 @@ package sqlc
 
 import (
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Transaction struct {
-	ID        int32     `json:"id"`
-	Amount    string    `json:"amount"`
-	Reason    *string   `json:"reason"`
-	CreatedAt time.Time `json:"created_at"`
-	Type      *string   `json:"type"`
-	UserID    *int32    `json:"user_id"`
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	Type      *string        `json:"type"`
+	UserID    *int32         `json:"user_id"`
 }
 
 type User struct {
-	ID        int32     `json:"id"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	Name      *string   `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	Balance   *string   `json:"balance"`
-}
-
-type UserAccountInfo struct {
-	ID        int32     `json:"id"`
-	Email     string    `json:"email"`
-	Name      *string   `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	Balance   *string   `json:"balance"`
+	ID        int32          `json:"id"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	Name      *string        `json:"name"`
+	CreatedAt time.Time      `json:"created_at"`
+	Balance   pgtype.Numeric `json:"balance"`
 }

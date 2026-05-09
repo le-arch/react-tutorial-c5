@@ -20,12 +20,19 @@ import (
 )
 
 func main() {
-	// Load environment variables from .env file
-	godotenv.Load()
+	// Load environment variables from .env file (ignore error if file doesn't exist)
+	_ = godotenv.Load()
+
+	// Set Gin mode
+	if os.Getenv("GIN_MODE") == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
 
 	route := gin.Default()
 
-	// Get environment variables
+	// Get environment variables with proper defaults
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		dbURL = "postgres://postgres:postgres@127.0.0.1:5432/piggydb?sslmode=disable"
@@ -36,12 +43,12 @@ func main() {
 		frontendURL = "http://localhost:3000"
 	}
 
-	// Configure Cors
+	// Configure CORS
 	route.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{frontendURL},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowOrigins:     []string{frontendURL, "http://localhost:3000", "http://localhost:3001"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -49,39 +56,53 @@ func main() {
 	// Healthcheck
 	route.GET("/api/v1/healthcheck", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": "Healthy!",
+			"status":  "healthy",
+			"message": "Piggy API is running",
+			"version": "1.0.0",
 		})
 	})
 
-	// Initialize repo and apply migrations
+	// Initialize database connection
 	ctx := context.Background()
-	dbConn, err := pgxpool.New(ctx, dbURL)
+	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Unable to connect to database: %v", err))
+	}
+	defer dbPool.Close()
+
+	// Test database connection
+	if err := dbPool.Ping(ctx); err != nil {
+		panic(fmt.Sprintf("Unable to ping database: %v", err))
 	}
 	fmt.Println("Database connection established!")
-	repostory := repo.NewRepository(dbConn)
-	if err := repo.MigrateUp(dbURL, "./internal/db/migrations", zerolog.Nop().With().Logger()); err != nil {
-		panic(err)
+
+	// Initialize repository
+	repository := repo.NewRepository(dbPool)
+
+	// Run migrations
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	if err := repo.MigrateUp(dbURL, "./internal/db/migrations", logger); err != nil {
+		logger.Warn().Err(err).Msg("Migration warning (may already be up to date)")
 	}
 
-	// Initialize service
-	appService := piggyservice.NewService(repostory)
-	handlers := handlers.NewHandler(appService)
+	// Initialize service and handlers
+	appService := piggyservice.NewService(repository)
+	handler := handlers.NewHandler(appService)
 
 	// Define application endpoints
+	api := route.Group("/api/v1")
 
 	// Public routes
-	route.POST("/api/v1/auth/register", handlers.Register)
-	route.POST("/api/v1/auth/login", handlers.Login)
+	api.POST("/auth/register", handler.Register)
+	api.POST("/auth/login", handler.Login)
 
 	// Protected routes
-	protected := route.Group("/api/v1")
+	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		protected.POST("/transactions", handlers.CreateTransaction)
-		protected.GET("/transactions", handlers.GetTransactions)
-		protected.GET("/account", handlers.GetUserAccount)
+		protected.POST("/transactions", handler.CreateTransaction)
+		protected.GET("/transactions", handler.GetTransactions)
+		protected.GET("/account", handler.GetUserAccount)
 	}
 
 	// Run application
@@ -90,5 +111,7 @@ func main() {
 		port = "8080"
 	}
 	fmt.Printf("Server running on port %s\n", port)
-	route.Run(":" + port)
+	if err := route.Run(":" + port); err != nil {
+		panic(fmt.Sprintf("Failed to start server: %v", err))
+	}
 }

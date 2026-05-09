@@ -8,36 +8,39 @@ export const useFetchAccountInfo = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	useEffect(() => {
-		const fetchAccountInfo = async () => {
-			try {
-				setLoading(true);
-				setError(null);
-				
-				// Check if user is authenticated
-				const token = getToken();
-				if (!token) {
-					setLoading(false);
-					return;
-				}
-				
-				const res = await getUserAccountInfo();
-				if (res.error) {
-					setError("Failed to load account info");
-					setAccountInfo(null);
-				} else {
-					setAccountInfo(res.data);
-				}
-			} catch (err: any) {
-				console.error("Failed to fetch account info:", err);
-				setError(err.message || "Failed to load account info");
-			} finally {
+	const fetchAccountInfo = async () => {
+		try {
+			setLoading(true);
+			setError(null);
+			
+			const token = getToken();
+			if (!token) {
+				setError("Not authenticated");
 				setLoading(false);
+				return;
 			}
-		};
+			
+			const res = await getUserAccountInfo();
+			
+			if (res.error) {
+				setError(res.error);
+				setAccountInfo(null);
+			} else {
+				setAccountInfo(res.data);
+				console.log("Account info loaded:", res.data);
+			}
+		} catch (err: any) {
+			console.error("Failed to fetch account info:", err);
+			setError(err.message || "Failed to load account information");
+			setAccountInfo(null);
+		} finally {
+			setLoading(false);
+		}
+	};
 
+	useEffect(() => {
 		fetchAccountInfo();
 	}, []);
 
-	return { accountInfo, loading, error };
+	return { accountInfo, loading, error, refreshAccount: fetchAccountInfo };
 };

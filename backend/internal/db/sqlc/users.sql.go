@@ -7,22 +7,31 @@ package sqlc
 
 import (
 	"context"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, password, name, balance)
-VALUES ($1, $2, $3, 0)
+VALUES ($1, $2, $3, $4)
 RETURNING id, email, password, name, created_at, balance
 `
 
 type CreateUserParams struct {
-	Email    string  `json:"email"`
-	Password string  `json:"password"`
-	Name     *string `json:"name"`
+	Email    string         `json:"email"`
+	Password string         `json:"password"`
+	Name     *string        `json:"name"`
+	Balance  pgtype.Numeric `json:"balance"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Email, arg.Password, arg.Name)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Email,
+		arg.Password,
+		arg.Name,
+		arg.Balance,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -33,6 +42,44 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Balance,
 	)
 	return i, err
+}
+
+const getUserAccountInfo = `-- name: GetUserAccountInfo :one
+SELECT id, email, name, created_at, balance
+FROM users
+WHERE id = $1
+`
+
+type GetUserAccountInfoRow struct {
+	ID        int32          `json:"id"`
+	Email     string         `json:"email"`
+	Name      *string        `json:"name"`
+	CreatedAt time.Time      `json:"created_at"`
+	Balance   pgtype.Numeric `json:"balance"`
+}
+
+func (q *Queries) GetUserAccountInfo(ctx context.Context, id int32) (GetUserAccountInfoRow, error) {
+	row := q.db.QueryRow(ctx, getUserAccountInfo, id)
+	var i GetUserAccountInfoRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.CreatedAt,
+		&i.Balance,
+	)
+	return i, err
+}
+
+const getUserBalance = `-- name: GetUserBalance :one
+SELECT balance FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUserBalance(ctx context.Context, id int32) (pgtype.Numeric, error) {
+	row := q.db.QueryRow(ctx, getUserBalance, id)
+	var balance pgtype.Numeric
+	err := row.Scan(&balance)
+	return balance, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
@@ -75,25 +122,6 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
 	return i, err
 }
 
-const getUserAccountInfo = `-- name: GetUserAccountInfo :one
-SELECT id, email, name, created_at, balance
-FROM users
-WHERE id = $1
-`
-
-func (q *Queries) GetUserAccountInfo(ctx context.Context, id int32) (UserAccountInfo, error) {
-	row := q.db.QueryRow(ctx, getUserAccountInfo, id)
-	var i UserAccountInfo
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Name,
-		&i.CreatedAt,
-		&i.Balance,
-	)
-	return i, err
-}
-
 const updateUserBalance = `-- name: UpdateUserBalance :exec
 UPDATE users
 SET balance = $2
@@ -101,22 +129,11 @@ WHERE id = $1
 `
 
 type UpdateUserBalanceParams struct {
-	ID      int32  `json:"id"`
-	Balance string `json:"balance"`
+	ID      int32          `json:"id"`
+	Balance pgtype.Numeric `json:"balance"`
 }
 
 func (q *Queries) UpdateUserBalance(ctx context.Context, arg UpdateUserBalanceParams) error {
 	_, err := q.db.Exec(ctx, updateUserBalance, arg.ID, arg.Balance)
 	return err
-}
-
-const getUserBalance = `-- name: GetUserBalance :one
-SELECT balance FROM users WHERE id = $1
-`
-
-func (q *Queries) GetUserBalance(ctx context.Context, id int32) (*string, error) {
-	row := q.db.QueryRow(ctx, getUserBalance, id)
-	var balance *string
-	err := row.Scan(&balance)
-	return balance, err
 }

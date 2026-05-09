@@ -5,10 +5,30 @@ import TransactionsList from "@/components/TransactionsList";
 import Button from "@/components/Button";
 import { useGetTransactions } from "@/hooks/useFetchTransactions";
 import { useFetchAccountInfo } from "@/hooks/useFetchAccountInfo";
+import { useEffect } from "react";
 
 export default function Home() {
-	const recentTransactions = useGetTransactions({ size: 5 });
+	const { transactions, loading: transactionsLoading, refreshTransactions } = useGetTransactions({ size: 5 });
 	const { accountInfo, loading: accountLoading } = useFetchAccountInfo();
+
+	// Refresh transactions when account info changes
+	useEffect(() => {
+		if (accountInfo) {
+			refreshTransactions();
+		}
+	}, [accountInfo]);
+
+	// Format balance to always show 2 decimal places with thousands separator
+	const formatBalance = (balance: number): string => {
+		if (balance === null || balance === undefined) return "0.00";
+		return balance.toLocaleString(undefined, {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		});
+	};
+
+	console.log("Home - Account Info:", accountInfo);
+	console.log("Home - Transactions:", transactions);
 
 	return (
 		<>
@@ -18,11 +38,16 @@ export default function Home() {
 					<section className="flex gap-4">
 						<StatsCard 
 							title="Current Balance" 
-							text={accountInfo ? `${accountInfo.balance.toLocaleString()} CFA` : accountLoading ? "Loading..." : "0 CFA"} 
+							text={accountInfo 
+								? `${formatBalance(accountInfo.balance)} CFA` 
+								: accountLoading 
+									? "Loading..." 
+									: "0.00 CFA"
+							} 
 						/>
 						<StatsCard
 							title="Account Status"
-							text={accountInfo ? "Active" : "Loading..."}
+							text={accountInfo ? "Active" : accountLoading ? "Loading..." : "Not logged in"}
 						/>
 					</section>
 					<section className="flex gap-3">
@@ -44,7 +69,11 @@ export default function Home() {
 						<h2 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-3">
 							Recent Transactions
 						</h2>
-						<TransactionsList transactions={recentTransactions} />
+						{transactionsLoading ? (
+							<div className="text-center py-4">Loading transactions...</div>
+						) : (
+							<TransactionsList transactions={transactions} />
+						)}
 					</section>
 				</main>
 			</div>

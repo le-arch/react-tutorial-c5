@@ -8,6 +8,8 @@ package sqlc
 import (
 	"context"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createTransaction = `-- name: CreateTransaction :one
@@ -17,19 +19,19 @@ RETURNING id, amount, type, reason, created_at, user_id
 `
 
 type CreateTransactionParams struct {
-	Amount string  `json:"amount"`
-	Type   *string `json:"type"`
-	Reason *string `json:"reason"`
-	UserID *int32  `json:"user_id"`
+	Amount pgtype.Numeric `json:"amount"`
+	Type   *string        `json:"type"`
+	Reason *string        `json:"reason"`
+	UserID *int32         `json:"user_id"`
 }
 
 type CreateTransactionRow struct {
-	ID        int32     `json:"id"`
-	Amount    string    `json:"amount"`
-	Type      *string   `json:"type"`
-	Reason    *string   `json:"reason"`
-	CreatedAt time.Time `json:"created_at"`
-	UserID    *int32    `json:"user_id"`
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Type      *string        `json:"type"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserID    *int32         `json:"user_id"`
 }
 
 func (q *Queries) CreateTransaction(ctx context.Context, arg CreateTransactionParams) (CreateTransactionRow, error) {
@@ -51,6 +53,20 @@ func (q *Queries) CreateTransaction(ctx context.Context, arg CreateTransactionPa
 	return i, err
 }
 
+const deleteTransaction = `-- name: DeleteTransaction :exec
+DELETE FROM transactions WHERE id = $1 AND user_id = $2
+`
+
+type DeleteTransactionParams struct {
+	ID     int32  `json:"id"`
+	UserID *int32 `json:"user_id"`
+}
+
+func (q *Queries) DeleteTransaction(ctx context.Context, arg DeleteTransactionParams) error {
+	_, err := q.db.Exec(ctx, deleteTransaction, arg.ID, arg.UserID)
+	return err
+}
+
 const getTransactionByID = `-- name: GetTransactionByID :one
 SELECT id, amount, type, reason, created_at, user_id 
 FROM transactions
@@ -58,12 +74,12 @@ WHERE id = $1
 `
 
 type GetTransactionByIDRow struct {
-	ID        int32     `json:"id"`
-	Amount    string    `json:"amount"`
-	Type      *string   `json:"type"`
-	Reason    *string   `json:"reason"`
-	CreatedAt time.Time `json:"created_at"`
-	UserID    *int32    `json:"user_id"`
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Type      *string        `json:"type"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserID    *int32         `json:"user_id"`
 }
 
 func (q *Queries) GetTransactionByID(ctx context.Context, id int32) (GetTransactionByIDRow, error) {
@@ -87,12 +103,12 @@ ORDER BY created_at DESC
 `
 
 type GetTransactionsRow struct {
-	ID        int32     `json:"id"`
-	Amount    string    `json:"amount"`
-	Type      *string   `json:"type"`
-	Reason    *string   `json:"reason"`
-	CreatedAt time.Time `json:"created_at"`
-	UserID    *int32    `json:"user_id"`
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Type      *string        `json:"type"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserID    *int32         `json:"user_id"`
 }
 
 func (q *Queries) GetTransactions(ctx context.Context) ([]GetTransactionsRow, error) {
@@ -130,12 +146,12 @@ ORDER BY created_at DESC
 `
 
 type GetTransactionsByUserIDRow struct {
-	ID        int32     `json:"id"`
-	Amount    string    `json:"amount"`
-	Type      *string   `json:"type"`
-	Reason    *string   `json:"reason"`
-	CreatedAt time.Time `json:"created_at"`
-	UserID    *int32    `json:"user_id"`
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Type      *string        `json:"type"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserID    *int32         `json:"user_id"`
 }
 
 func (q *Queries) GetTransactionsByUserID(ctx context.Context, userID *int32) ([]GetTransactionsByUserIDRow, error) {
@@ -147,6 +163,54 @@ func (q *Queries) GetTransactionsByUserID(ctx context.Context, userID *int32) ([
 	items := []GetTransactionsByUserIDRow{}
 	for rows.Next() {
 		var i GetTransactionsByUserIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Amount,
+			&i.Type,
+			&i.Reason,
+			&i.CreatedAt,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTransactionsByUserIDAndType = `-- name: GetTransactionsByUserIDAndType :many
+SELECT id, amount, type, reason, created_at, user_id 
+FROM transactions
+WHERE user_id = $1 AND type = $2
+ORDER BY created_at DESC
+`
+
+type GetTransactionsByUserIDAndTypeParams struct {
+	UserID *int32  `json:"user_id"`
+	Type   *string `json:"type"`
+}
+
+type GetTransactionsByUserIDAndTypeRow struct {
+	ID        int32          `json:"id"`
+	Amount    pgtype.Numeric `json:"amount"`
+	Type      *string        `json:"type"`
+	Reason    *string        `json:"reason"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserID    *int32         `json:"user_id"`
+}
+
+func (q *Queries) GetTransactionsByUserIDAndType(ctx context.Context, arg GetTransactionsByUserIDAndTypeParams) ([]GetTransactionsByUserIDAndTypeRow, error) {
+	rows, err := q.db.Query(ctx, getTransactionsByUserIDAndType, arg.UserID, arg.Type)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetTransactionsByUserIDAndTypeRow{}
+	for rows.Next() {
+		var i GetTransactionsByUserIDAndTypeRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Amount,

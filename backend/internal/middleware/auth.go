@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -9,7 +11,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var JWTSecret = []byte("your-secret-key-change-in-production")
+var JWTSecret = []byte(getJWTSecret())
+
+func getJWTSecret() string {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		secret = "piggydb-secret-key-change-in-production-2024"
+	}
+	return secret
+}
 
 type Claims struct {
 	UserID int32  `json:"user_id"`
@@ -22,8 +32,10 @@ func GenerateToken(userID int32, email string) (string, error) {
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(72 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "piggydb-api",
 		},
 	}
 
@@ -35,24 +47,54 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			c.Abort()
 			return
 		}
 
-		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
+		// Check for Bearer prefix
+		parts := strings.SplitN(authHeader, " ", 2)
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "bearer") {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header must be in format: Bearer <token>"})
+			c.Abort()
+			return
+		}
+
+		tokenString := parts[1]
 		claims := &Claims{}
 
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			// Validate signing method
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
 			return JWTSecret, nil
 		})
 
-		if err != nil || !token.Valid {
+		if err != nil {
+			var errorMsg string
+			switch {
+			case errors.Is(err, jwt.ErrTokenExpired):
+				errorMsg = "Token has expired"
+			case errors.Is(err, jwt.ErrTokenNotValidYet):
+				errorMsg = "Token not valid yet"
+			case errors.Is(err, jwt.ErrSignatureInvalid):
+				errorMsg = "Invalid token signature"
+			default:
+				errorMsg = "Invalid token"
+			}
+			c.JSON(http.StatusUnauthorized, gin.H{"error": errorMsg})
+			c.Abort()
+			return
+		}
+
+		if !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
+		// Set user info in context
 		c.Set("user_id", claims.UserID)
 		c.Set("user_email", claims.Email)
 		c.Next()

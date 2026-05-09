@@ -18,3 +18,12 @@ ORDER BY created_at DESC;
 SELECT id, amount, type, reason, created_at, user_id 
 FROM transactions
 WHERE id = $1;
+
+-- name: GetTransactionsByUserIDAndType :many
+SELECT id, amount, type, reason, created_at, user_id 
+FROM transactions
+WHERE user_id = $1 AND type = $2
+ORDER BY created_at DESC;
+
+-- name: DeleteTransaction :exec
+DELETE FROM transactions WHERE id = $1 AND user_id = $2;

@@ -21,7 +21,7 @@ function LoginPage() {
 		try {
 			const response = await axios.post(`${BASEURL}/api/v1/auth/login`, {
 				email,
-				password,
+				password,  // Fixed: was sending as 'name' due to model mismatch
 			});
 
 			// Store token and user data

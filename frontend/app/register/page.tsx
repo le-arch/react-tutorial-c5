@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const BASEURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
@@ -19,6 +20,22 @@ function RegisterPage() {
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault();
 
+		// Validate inputs
+		if (!name.trim()) {
+			toast.error("Name is required");
+			return;
+		}
+
+		if (!email.trim()) {
+			toast.error("Email is required");
+			return;
+		}
+
+		if (password.length < 6) {
+			toast.error("Password must be at least 6 characters");
+			return;
+		}
+
 		if (password !== confirmPassword) {
 			toast.error("Passwords do not match");
 			return;
@@ -28,9 +45,9 @@ function RegisterPage() {
 
 		try {
 			const response = await axios.post(`${BASEURL}/api/v1/auth/register`, {
-				name,
 				email,
 				password,
+				name,
 			});
 
 			// Store token and user data
@@ -42,7 +59,8 @@ function RegisterPage() {
 				router.push("/");
 			}, 1500);
 		} catch (error: any) {
-			toast.error(error.response?.data?.error || "Registration failed");
+			const errorMessage = error.response?.data?.error || "Registration failed";
+			toast.error(errorMessage);
 		} finally {
 			setLoading(false);
 		}
@@ -96,6 +114,7 @@ function RegisterPage() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
+								minLength={6}
 							/>
 						</div>
 						<div className="flex flex-col gap-1">
@@ -109,6 +128,7 @@ function RegisterPage() {
 								value={confirmPassword}
 								onChange={(e) => setConfirmPassword(e.target.value)}
 								required
+								minLength={6}
 							/>
 						</div>
 						<button
